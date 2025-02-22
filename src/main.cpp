@@ -4,9 +4,7 @@
 
 unsigned long start_millis;
 unsigned long current_millis;
-int setpint = 0;
-double yaw;
-double output;
+int setpoint = 0;
 
 Motors motors(
     MOTOR1_PWM, MOTOR1_IN1, MOTOR1_IN2, 
@@ -34,13 +32,13 @@ void setup() {
 void loop() {
 
     bno.getEuler();
-    yaw = bno.getYaw();
+    double yaw = bno.getYaw();
 
-    output = pid.Calculate(setpint, yaw);
+    double output = pid.Calculate(setpoint, yaw);
     Serial.println(output);
 
+    motors.MoveMotorsImu(setpoint, 160, output);
 
-    delay(20);  
     /*
     Serial.println("Mover hacia adelante");
     motors.SetAllSpeeds(90);
