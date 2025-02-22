@@ -1,6 +1,12 @@
 #include "motors.h"
 #include "BNO.h"
+#include "PID.h"
 
+unsigned long start_millis;
+unsigned long current_millis;
+int setpint = 0;
+double yaw;
+double output;
 
 Motors motors(
     MOTOR1_PWM, MOTOR1_IN1, MOTOR1_IN2, 
@@ -10,18 +16,31 @@ Motors motors(
 );
 
 Bno bno;
+
+PID pid(0.6, 0.00735, 45, 200);
+
+
 void setup() {
     Serial.begin(9600);
     motors.InitializeMotors();  // Inicializar los motores
     Serial.println("Prueba de motores iniciada.");
 
     bno.bno_begin();
+
+    start_millis = millis();
+
 }
 
 void loop() {
 
     bno.getEuler();
-    
+    yaw = bno.getYaw();
+
+    output = pid.Calculate(setpint, yaw);
+    Serial.println(output);
+
+
+    delay(20);  
     /*
     Serial.println("Mover hacia adelante");
     motors.SetAllSpeeds(90);
